@@ -158,8 +158,22 @@ public class UserCRUDForm {
 		UserCRUDForm.getContentPane().add(btnChangeAvatar);
 		
 		JButton btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tfEmail.setText("");
+				tfName.setText("");
+				tfPassword.setText("");
+				tfConfirmPassword.setText("");
+				tfPhone.setText("");
+			}
+		});
 		btnReset.setBounds(516, 257, 97, 36);
 		UserCRUDForm.getContentPane().add(btnReset);
+
+		JButton btnUpdate = new JButton("Update");
+		btnUpdate.setEnabled(false);
+		btnUpdate.setBounds(409, 312, 97, 36);
+		UserCRUDForm.getContentPane().add(btnUpdate);
 		
 		tfPassword = new JPasswordField();
 		tfPassword.setBounds(148, 155, 220, 20);
@@ -248,9 +262,5 @@ public class UserCRUDForm {
 		
 		btnAdd.setBounds(409, 257, 97, 36);
 		UserCRUDForm.getContentPane().add(btnAdd);
-		
-		JButton btnUpdate = new JButton("Update");
-		btnUpdate.setBounds(409, 312, 97, 36);
-		UserCRUDForm.getContentPane().add(btnUpdate);
 	}
 }
