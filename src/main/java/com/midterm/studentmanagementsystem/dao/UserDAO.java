@@ -68,14 +68,14 @@ public class UserDAO implements DAO<User> {
         if (obj.getStatus() != null) sql += "status = ?, ";
         if (obj.getRole() != null) sql += "role = ?, ";
         
-        sql = sql.substring(0, sql.length() - 2) + "updatedAt = ? WHERE email = ?";
-        
+        sql = sql.substring(0, sql.length() - 2) + ", updatedAt = ? WHERE email = ?";
         try {
         	PreparedStatement pstm = conn.prepareStatement(sql);
         	
         	int parameterIndex = 1;
-
-            if (obj.getPassword() != null) pstm.setString(parameterIndex++, obj.getPassword());
+        	String hashed = BCrypt.hashpw(obj.getPassword(), BCrypt.gensalt(10));
+        	
+            if (obj.getPassword() != null) pstm.setString(parameterIndex++, hashed);
             if (obj.getName() != null) pstm.setString(parameterIndex++, obj.getName());
             if (obj.getAge() > 0 && obj.getAge() <= 100) pstm.setInt(parameterIndex++, obj.getAge());
             if (obj.getDob() != null) pstm.setDate(parameterIndex++, obj.getDob());
@@ -99,7 +99,7 @@ public class UserDAO implements DAO<User> {
 
 	@Override
 	public boolean delete(User obj) {
-		String sql = "DELETE FROM User u WHERE u.email = ?";
+		String sql = "DELETE FROM Users WHERE email = ?";
 		
 		try {
 			PreparedStatement pstm = conn.prepareStatement(sql);

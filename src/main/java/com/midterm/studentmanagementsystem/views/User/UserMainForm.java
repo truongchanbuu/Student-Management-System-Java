@@ -2,6 +2,8 @@ package com.midterm.studentmanagementsystem.views.User;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.JButton;
@@ -88,7 +90,7 @@ public class UserMainForm {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new UserCRUDForm(userDAO, UserMainForm.this);
+				new UserCRUDForm(userDAO, UserMainForm.this, null, true);
 			}
 		});
 		
@@ -96,6 +98,19 @@ public class UserMainForm {
 		UserMainForm.getContentPane().add(btnAdd);
 
 		JButton btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int selectedRow = userTable.getSelectedRow();
+				
+				if (selectedRow < 0) {
+					JOptionPane.showMessageDialog(UserMainForm, "No selected row", "There is something wrong", JOptionPane.OK_OPTION);
+					return;
+				}
+				
+				String email = (String) userTable.getValueAt(selectedRow, 0);
+		        new UserCRUDForm(userDAO, UserMainForm.this, email, false);
+			}
+		});
 		btnEdit.setBounds(131, 390, 111, 43);
 		UserMainForm.getContentPane().add(btnEdit);
 
@@ -116,24 +131,61 @@ public class UserMainForm {
 		btnNewButton.setBounds(635, 60, 100, 30);
 		UserMainForm.getContentPane().add(btnNewButton);
 
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int selectedUserIndex = userTable.getSelectedRow();
+				
+				if (selectedUserIndex < 0) {
+					JOptionPane.showMessageDialog(UserMainForm, "No selected row", "There is something wrong", JOptionPane.OK_OPTION);
+					return;
+				}
+				
+				String email = (String) userTable.getValueAt(selectedUserIndex, 0);
+				int deletionResult = JOptionPane.showConfirmDialog(UserMainForm, "Do you really want to delete " + email + "?", "DELELTE USER", JOptionPane.YES_NO_OPTION);
+				
+				if (deletionResult == JOptionPane.YES_OPTION) {
+					User deletedUser = userDAO.getById(email);
+					
+					if (deletedUser == null) {
+						JOptionPane.showMessageDialog(UserMainForm, "There is no user to delete", "DELETE USER", JOptionPane.OK_OPTION);
+						return;
+					}
+					
+					userDAO.delete(deletedUser);
+					updateTable(deletedUser, true);
+				}
+			}
+		});
 		UserMainForm.setVisible(true);
 	}
 
-	public void updateTable(User u) {
+	public void updateTable(User u, boolean isDeleteMode) {
 		DefaultTableModel model = (DefaultTableModel) userTable.getModel();
 
-        Vector<Object> rowData = new Vector<>();
-        rowData.add(u.getEmail());
-        rowData.add(u.getName());
-        rowData.add(u.getAge());
-        rowData.add(u.getDob());
-        rowData.add(u.getPhone());
-        rowData.add(u.getStatus());
-        rowData.add(u.getRole());
-        rowData.add(u.getCreatedAt());
-        rowData.add(u.getUpdatedAt());
-        
-        model.addRow(rowData);
-        model.fireTableDataChanged();
+		int rowCount = model.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            String emailInTable = (String) model.getValueAt(i, 0);
+            if (emailInTable.equals(u.getEmail())) {
+                model.removeRow(i);
+                break;
+            }
+        }
+		
+        if (!isDeleteMode) {
+        	Vector<Object> rowData = new Vector<>();
+            rowData.add(u.getEmail());
+            rowData.add(u.getName());
+            rowData.add(u.getAge());
+            rowData.add(u.getDob());
+            rowData.add(u.getPhone());
+            rowData.add(u.getStatus());
+            rowData.add(u.getRole());
+            rowData.add(u.getCreatedAt());
+            rowData.add(u.getUpdatedAt());
+            
+            model.addRow(rowData);
+        }
+		
+	    model.fireTableDataChanged();	
 	}
 }
