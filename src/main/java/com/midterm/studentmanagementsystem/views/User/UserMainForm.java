@@ -18,9 +18,13 @@ import java.util.Vector;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import java.awt.Color;
 
 public class UserMainForm {
 	private UserDAO userDAO;
+	private String email;
 
 	private JFrame UserMainForm;
 	private JTable userTable;
@@ -29,8 +33,9 @@ public class UserMainForm {
 	/**
 	 * Create the application.
 	 */
-	public UserMainForm(UserDAO userDAO) {
+	public UserMainForm(UserDAO userDAO, String email) {
 		this.userDAO = userDAO;
+		this.email = email;
 		initialize();
 	}
 
@@ -39,6 +44,7 @@ public class UserMainForm {
 	 */
 	private void initialize() {
 		UserMainForm = new JFrame();
+		UserMainForm.getContentPane().setBackground(UIManager.getColor("CheckBox.background"));
 		UserMainForm.setTitle("Student Management System");
 		UserMainForm.setBounds(100, 100, 765, 484);
 		UserMainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -123,14 +129,22 @@ public class UserMainForm {
 		UserMainForm.getContentPane().add(tfSearch);
 		tfSearch.setColumns(10);
 
-		JButton button = new JButton("New button");
-		button.setBounds(114, 118, 511, -47);
-		UserMainForm.getContentPane().add(button);
-
 		JButton btnNewButton = new JButton("Search");
 		btnNewButton.setBounds(635, 60, 100, 30);
 		UserMainForm.getContentPane().add(btnNewButton);
-
+		
+		JButton btnUser = new JButton(email);
+		btnUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new UserDetailForm(userDAO, email, UserMainForm.this);
+			}
+		});
+		btnUser.setBackground(Color.LIGHT_GRAY);
+		btnUser.setHorizontalAlignment(SwingConstants.RIGHT);
+		btnUser.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+		btnUser.setBounds(570, 22, 165, 23);
+		UserMainForm.getContentPane().add(btnUser);
+		
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selectedUserIndex = userTable.getSelectedRow();
@@ -156,6 +170,7 @@ public class UserMainForm {
 				}
 			}
 		});
+		
 		UserMainForm.setVisible(true);
 	}
 

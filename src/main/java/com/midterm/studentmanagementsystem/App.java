@@ -5,6 +5,7 @@ import java.sql.Connection;
 
 import com.midterm.studentmanagementsystem.dao.UserDAO;
 import com.midterm.studentmanagementsystem.utils.JDBCUtils;
+import com.midterm.studentmanagementsystem.views.Auth.LoginForm;
 import com.midterm.studentmanagementsystem.views.User.UserMainForm;
 
 /**
@@ -21,7 +22,7 @@ public class App
     	EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					new UserMainForm(userDAO);
+					new LoginForm(userDAO);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
