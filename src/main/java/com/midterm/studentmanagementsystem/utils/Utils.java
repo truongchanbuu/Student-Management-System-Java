@@ -1,5 +1,8 @@
 package com.midterm.studentmanagementsystem.utils;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,8 +10,10 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -17,11 +22,34 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 public class Utils {
+	public static void changeAvatar(File image, String email) {
+		String resourcesFolderPath = "src/main/resources";
+		Path userFolderPath = Paths.get(resourcesFolderPath, email);
+		
+		try {
+		    Files.createDirectories(userFolderPath);
+		} catch (IOException ex) {
+		    System.out.println("Cannot create directory: " + ex.getMessage());
+		}
+		
+		String imageFileName = image.getName();
+		
+		Path destinationPath = userFolderPath.resolve("avatar" + getFileExtension(imageFileName));
+		
+		try {
+		    Files.copy(Paths.get(image.getPath()), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException ex) {
+			System.out.println(ex.getMessage());
+		}
+	}
+	
 	public static <T> List<T> importDataToCsvFile(String filePath, Class<T> clazz) {
 		List<T> data = new ArrayList<>();
 		Path path = Paths.get(filePath);
@@ -135,4 +163,30 @@ public class Utils {
         LocalDate localDate = LocalDate.parse(dateString, formatter);
         return Date.valueOf(localDate);
     }
+	
+	public static String getFileExtension(String fileName) {
+		int dotIndex = fileName.indexOf(".");
+        return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+	}
+	
+	public static boolean checkImageFile(File imageFile) {
+		try {
+			String mimeType = Files.probeContentType(imageFile.toPath());
+			
+			if (mimeType != null && mimeType.split("/")[0].equals("image")) {
+				return true;
+			}
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+
+		return false;
+	}
+	
+	public static ImageIcon stretchImage(BufferedImage image, int width, int height) {
+		Image stretchedImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		ImageIcon imgIcon = new ImageIcon(stretchedImage);
+		
+		return imgIcon;
+	}
 }

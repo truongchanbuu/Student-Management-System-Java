@@ -7,8 +7,12 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageProducer;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
@@ -16,6 +20,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.JTextField;
 
@@ -24,9 +30,11 @@ import com.midterm.studentmanagementsystem.models.User;
 import com.midterm.studentmanagementsystem.utils.Utils;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.MaskFormatter;
 
 import java.awt.event.ActionListener;
@@ -35,11 +43,13 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 import javax.swing.JFormattedTextField;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 
 public class UserCRUDForm {
 	private UserDAO userDAO;
 	private UserMainForm userMainForm;
 	private String email;
+	private String avatarName;
 
 	private boolean isAddMode;
 	private JFrame UserCRUDForm;
@@ -48,6 +58,7 @@ public class UserCRUDForm {
 	private JTextField tfPhone;
 	private JPasswordField tfPassword;
 	private JPasswordField tfConfirmPassword;
+	private JLabel lblAvatar;
 	private JFormattedTextField tfDob;
 	private JComboBox<String> cbbRole;
 	private JComboBox<String> cbbStatus;
@@ -138,56 +149,12 @@ public class UserCRUDForm {
 		lblConfirmPassword.setBounds(10, 197, 123, 14);
 		UserCRUDForm.getContentPane().add(lblConfirmPassword);
 
-		JLabel lblAvatar = new JLabel("This is avatar");
+		lblAvatar = new JLabel("This is avatar");
 		lblAvatar.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAvatar.setSize(500, 500);
 		lblAvatar.setBounds(429, 29, 153, 174);
 
-		// Set image
-		String baseResourcesDir = "src/main/resources";
-		Path filePath = Paths.get(baseResourcesDir, "default-avatar.png");
-
-		BufferedImage image = null;
-		try {
-			image = ImageIO.read(new File(filePath.toUri()));
-
-			int labelWidth = lblAvatar.getWidth();
-			int labelHeight = lblAvatar.getHeight();
-
-			Image stretchedImage = image.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
-			ImageIcon imgIcon = new ImageIcon(stretchedImage);
-			lblAvatar.setIcon(imgIcon);
-		} catch (IOException ex) {
-			JOptionPane.showMessageDialog(null, ex.getMessage(), "There is something wrong", JOptionPane.CLOSED_OPTION);
-		}
-
 		UserCRUDForm.getContentPane().add(lblAvatar);
-
-		JButton btnChangeAvatar = new JButton("Change Avatar");
-		btnChangeAvatar.setBounds(429, 214, 153, 32);
-		UserCRUDForm.getContentPane().add(btnChangeAvatar);
-
-		JButton btnReset = new JButton("Reset");
-		btnReset.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				tfEmail.setText("");
-				tfName.setText("");
-				tfPassword.setText("");
-				tfConfirmPassword.setText("");
-				tfPhone.setText("");
-			}
-		});
-		btnReset.setBounds(516, 257, 97, 36);
-		UserCRUDForm.getContentPane().add(btnReset);
-
-		JButton btnUpdate = new JButton("Update");
-		btnUpdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				addOrUpdate(isAddMode);
-			}
-		});
-		btnUpdate.setBounds(409, 312, 97, 36);
-		UserCRUDForm.getContentPane().add(btnUpdate);
 
 		tfPassword = new JPasswordField();
 		tfPassword.setBounds(148, 155, 220, 20);
@@ -212,19 +179,160 @@ public class UserCRUDForm {
 		cbbStatus.setBounds(143, 319, 225, 22);
 		UserCRUDForm.getContentPane().add(cbbStatus);
 
-		JButton btnDelete = new JButton("Delete");
-		btnDelete.setBounds(516, 312, 97, 36);
-		UserCRUDForm.getContentPane().add(btnDelete);
-		
-		// Add a new user
 		JButton btnAdd = new JButton("Add");
+		JButton btnUpdate = new JButton("Update");
+		JButton btnDelete = new JButton("Delete");
+		JButton btnReset = new JButton("Reset");
+		JButton btnChangeAvatar = new JButton("Change Avatar");
+
 		if (isAddMode) {
 			btnUpdate.setEnabled(false);
 			btnDelete.setEnabled(false);
 		} else {
+			tfEmail.setEditable(false);
 			btnAdd.setEnabled(false);
 		}
 
+		// Reset all fields
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tfEmail.setText("");
+				tfName.setText("");
+				tfPassword.setText("");
+				tfConfirmPassword.setText("");
+				tfPhone.setText("");
+			}
+		});
+		btnReset.setBounds(516, 257, 97, 36);
+		UserCRUDForm.getContentPane().add(btnReset);
+
+		btnDelete.setBounds(516, 312, 97, 36);
+		UserCRUDForm.getContentPane().add(btnDelete);
+
+		User selectedUser = userDAO.getById(email);
+		if (selectedUser == null && !isAddMode) {
+			JOptionPane.showMessageDialog(UserCRUDForm, "There is no user to update", "There is something wrong",
+					JOptionPane.OK_OPTION);
+			return;
+		}
+
+		if (selectedUser != null && !isAddMode) {
+			tfEmail.setText(selectedUser.getEmail());
+			tfName.setText(selectedUser.getName());
+
+			if (selectedUser.getDob() != null) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				String formattedDate = dateFormat.format(selectedUser.getDob());
+				tfDob.setValue(formattedDate);
+			}
+
+			tfPhone.setText(selectedUser.getPhone());
+			cbbRole.setSelectedItem(selectedUser.getRole());
+			cbbStatus.setSelectedItem(selectedUser.getStatus());
+		}
+
+		// Set image
+		String baseResourcesDir = "src/main/resources";
+		avatarName = "default-avatar.png";
+		Path filePath = Paths.get(baseResourcesDir, avatarName);
+
+		if (email != null) {
+			Path directoryPath = Paths.get(baseResourcesDir, email);
+			File directory = directoryPath.toFile();
+
+			if (directory.exists() && directory.isDirectory()) {
+				try (Stream<Path> pathStream = Files.find(directoryPath, 1, (p, basicFileAttributes) -> {
+					String fileName = p.getFileName().toString();
+					return Pattern.compile("^avatar.*", Pattern.CASE_INSENSITIVE).matcher(fileName).matches();
+				})) {
+					Path foundPath = pathStream.findFirst().orElse(null);
+
+					if (foundPath != null) {
+						filePath = foundPath;
+					}
+				} catch (IOException ex) {
+					System.out.println(ex.getMessage());
+				}
+			}
+		}
+
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(new File(filePath.toUri()));
+
+			int labelWidth = lblAvatar.getWidth();
+			int labelHeight = lblAvatar.getHeight();
+
+			ImageIcon imgIcon = Utils.stretchImage(image, labelWidth, labelHeight);
+			lblAvatar.setIcon(imgIcon);
+		} catch (IOException ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage(), "There is something wrong", JOptionPane.CLOSED_OPTION);
+		}
+
+		// Delete user
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int confirmDeletion = JOptionPane.showConfirmDialog(UserCRUDForm,
+						"Do you really want to delete " + selectedUser.getEmail() + "?", "DELETE USER",
+						JOptionPane.YES_NO_OPTION);
+
+				if (confirmDeletion == JOptionPane.YES_OPTION) {
+					userDAO.delete(selectedUser);
+					userMainForm.updateTable(selectedUser, true);
+					UserCRUDForm.dispatchEvent(new WindowEvent(UserCRUDForm, WindowEvent.WINDOW_CLOSING));
+				}
+			}
+		});
+
+		// Change avatar
+		btnChangeAvatar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png",
+						"gif", "bmp", "svg");
+				chooser.setFileFilter(imageFilter);
+
+				int result = chooser.showOpenDialog(UserCRUDForm);
+
+				if (result == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = chooser.getSelectedFile();
+
+					if (!Utils.checkImageFile(selectedFile)) {
+						JOptionPane.showMessageDialog(UserCRUDForm, "Please upload an image",
+								"There is something wrong", JOptionPane.OK_OPTION);
+						return;
+					}
+					avatarName = selectedFile.getName();
+
+					BufferedImage changedImage = null;
+					try {
+						changedImage = ImageIO.read(selectedFile);
+
+						int labelWidth = lblAvatar.getWidth();
+						int labelHeight = lblAvatar.getHeight();
+
+						ImageIcon imgIcon = Utils.stretchImage(changedImage, labelWidth, labelHeight);
+						imgIcon.setDescription(selectedFile.getPath());
+						lblAvatar.setIcon(imgIcon);
+					} catch (IOException ex) {
+						System.out.println(ex.getMessage());
+					}
+				}
+			}
+		});
+		btnChangeAvatar.setBounds(429, 214, 153, 32);
+		UserCRUDForm.getContentPane().add(btnChangeAvatar);
+
+		// Update user
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addOrUpdate(isAddMode);
+			}
+		});
+		btnUpdate.setBounds(409, 312, 97, 36);
+		UserCRUDForm.getContentPane().add(btnUpdate);
+
+		// Add a new user
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				addOrUpdate(isAddMode);
@@ -233,39 +341,6 @@ public class UserCRUDForm {
 
 		btnAdd.setBounds(409, 257, 97, 36);
 		UserCRUDForm.getContentPane().add(btnAdd);
-		
-		User selectedUser = userDAO.getById(email);
-		if (selectedUser == null && !isAddMode) {
-			JOptionPane.showMessageDialog(UserCRUDForm, "There is no user to update", "There is something wrong", JOptionPane.OK_OPTION);
-			return;
-		}
-		
-		if (selectedUser != null && !isAddMode) {
-			tfEmail.setText(selectedUser.getEmail());
-			tfName.setText(selectedUser.getName());
-			
-			if (selectedUser.getDob() != null) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-				String formattedDate = dateFormat.format(selectedUser.getDob());
-				tfDob.setValue(formattedDate);
-			}
-			
-			tfPhone.setText(selectedUser.getPhone());
-			cbbRole.setSelectedItem(selectedUser.getRole());
-			cbbStatus.setSelectedItem(selectedUser.getStatus());
-		}
-		
-		btnDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int confirmDeletion = JOptionPane.showConfirmDialog(UserCRUDForm, "Do you really want to delete " + selectedUser.getEmail() + "?", "DELETE USER", JOptionPane.YES_NO_OPTION);
-				
-				if (confirmDeletion == JOptionPane.YES_OPTION) {
-					userDAO.delete(selectedUser);
-					userMainForm.updateTable(selectedUser, true);
-					UserCRUDForm.dispatchEvent(new WindowEvent(UserCRUDForm, WindowEvent.WINDOW_CLOSING));
-				}
-			}
-		});
 	}
 
 	public void addOrUpdate(boolean isAddMode) {
@@ -309,8 +384,7 @@ public class UserCRUDForm {
 		Date dobDate = Utils.convertToDate(dob.toString());
 		int age = Utils.calculateAge(dobDate);
 
-		User u = new User(email, null, name, age, dobDate, status.toString(), phone, role.toString(), null,
-				null);
+		User u = new User(email, null, name, age, dobDate, status.toString(), phone, role.toString(), null, null);
 
 		if (isAddMode) {
 			String passwordStr = new String(password);
@@ -319,7 +393,7 @@ public class UserCRUDForm {
 						"Invalid input", JOptionPane.OK_OPTION);
 				return;
 			}
-			
+
 			u.setPassword(passwordStr);
 			u.setCreatedAt(currentDate);
 			boolean isAdded = userDAO.add(u);
@@ -340,10 +414,10 @@ public class UserCRUDForm {
 							"Invalid input", JOptionPane.OK_OPTION);
 					return;
 				}
-				
+
 				u.setPassword(passwordStr);
 			}
-			
+
 			u.setUpdatedAt(currentDate);
 			boolean isUpdate = userDAO.update(u);
 
@@ -356,7 +430,15 @@ public class UserCRUDForm {
 
 			JOptionPane.showMessageDialog(UserCRUDForm, "Updated successfully", "Success", JOptionPane.OK_OPTION);
 		}
-		
+
+		if (!avatarName.equalsIgnoreCase("default-avatar.png")) {
+			Icon avatarIcon = lblAvatar.getIcon();
+			String imagePath = ((ImageIcon) avatarIcon).getDescription();
+
+			File avatarFile = new File(imagePath);
+			Utils.changeAvatar(avatarFile, email);
+		}
+
 		UserCRUDForm.dispatchEvent(new WindowEvent(UserCRUDForm, WindowEvent.WINDOW_CLOSING));
 		userMainForm.updateTable(u, false);
 	}
