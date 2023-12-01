@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.midterm.studentmanagementsystem.dao.LoginHistoryDAO;
 import com.midterm.studentmanagementsystem.dao.UserDAO;
 import com.midterm.studentmanagementsystem.models.User;
 import com.midterm.studentmanagementsystem.utils.Utils;
@@ -32,6 +33,7 @@ import java.awt.event.ActionEvent;
 public class UserDetailForm {
 	private String email;
 	private UserDAO userDAO;
+	private LoginHistoryDAO lhDAO;
 	private UserMainForm userMainForm;
 	
 	private JFrame UserDetailForm;
@@ -48,8 +50,9 @@ public class UserDetailForm {
 	/**
 	 * Create the application.
 	 */
-	public UserDetailForm(UserDAO userDAO, String email, UserMainForm userMainForm) {
+	public UserDetailForm(UserDAO userDAO, LoginHistoryDAO lhDAO, String email, UserMainForm userMainForm) {
 		this.userDAO = userDAO;
+		this.lhDAO = lhDAO;
 		this.email = email;
 		this.userMainForm = userMainForm;
 		initialize();
@@ -206,7 +209,7 @@ public class UserDetailForm {
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UserDetailForm.dispose();
-				new UserCRUDForm(userDAO, userMainForm, email, false);
+				new UserCRUDForm(userDAO, lhDAO, userMainForm, email, false);
 			}
 		});
 		btnUpdate.setBounds(223, 223, 128, 44);
@@ -226,12 +229,28 @@ public class UserDetailForm {
 		tfEmail.setText(user.getEmail());
 		tfName.setText(user.getName());
 		tfAge.setText(user.getAge()+"");
-		tfDob.setText(user.getDob().toString());
+
+		if (user.getDob() != null) {
+			tfDob.setText(user.getDob().toString());
+		} else {
+			tfDob.setText("N/A");
+		}
+		
 		tfPhone.setText(user.getPhone());
 		tfRole.setText(user.getRole());
 		tfStatus.setText(user.getStatus());
-		tfCreatedAt.setText(user.getCreatedAt().toString());
-		tfUpdatedAt.setText(user.getUpdatedAt().toString());
+		
+		if (user.getCreatedAt() != null) {
+		    tfCreatedAt.setText(user.getCreatedAt().toString());
+		} else {
+		    tfCreatedAt.setText("N/A");
+		}
+
+		if (user.getUpdatedAt() != null) {
+		    tfUpdatedAt.setText(user.getUpdatedAt().toString());
+		} else {
+		    tfUpdatedAt.setText("N/A");
+		}
 		
 		String baseResourcesDir = "src/main/resources";
 		Path filePath = Paths.get(baseResourcesDir, "default-avatar.png");

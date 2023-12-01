@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import javax.swing.JTextField;
 
+import com.midterm.studentmanagementsystem.dao.LoginHistoryDAO;
 import com.midterm.studentmanagementsystem.dao.UserDAO;
 import com.midterm.studentmanagementsystem.models.User;
 import com.midterm.studentmanagementsystem.utils.Utils;
@@ -42,6 +43,7 @@ import javax.swing.JFileChooser;
 
 public class UserCRUDForm {
 	private UserDAO userDAO;
+	private LoginHistoryDAO lhDAO;
 	private UserMainForm userMainForm;
 	private String email;
 	private String avatarName;
@@ -61,7 +63,7 @@ public class UserCRUDForm {
 	/**
 	 * Create the application.
 	 */
-	public UserCRUDForm(UserDAO userDAO, UserMainForm userMainForm, String email, boolean isAddMode) {
+	public UserCRUDForm(UserDAO userDAO, LoginHistoryDAO lhDAO, UserMainForm userMainForm, String email, boolean isAddMode) {
 		this.userDAO = userDAO;
 		this.userMainForm = userMainForm;
 		this.isAddMode = isAddMode;
@@ -272,9 +274,17 @@ public class UserCRUDForm {
 						JOptionPane.YES_NO_OPTION);
 
 				if (confirmDeletion == JOptionPane.YES_OPTION) {
-					userDAO.delete(selectedUser);
+					lhDAO.deleteAllByEmail(selectedUser.getEmail());
+					boolean isDeleted = userDAO.delete(selectedUser);
+					if (!isDeleted) {
+						JOptionPane.showMessageDialog(UserCRUDForm, "Failed to delete", "Failed", JOptionPane.OK_OPTION);
+						return;
+					}
+					
+					JOptionPane.showMessageDialog(UserCRUDForm, "Deleted successful", "Success", JOptionPane.OK_OPTION);
 					userMainForm.updateTable(selectedUser, true);
 					UserCRUDForm.dispatchEvent(new WindowEvent(UserCRUDForm, WindowEvent.WINDOW_CLOSING));
+				
 				}
 			}
 		});
@@ -286,6 +296,7 @@ public class UserCRUDForm {
 				FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png",
 						"gif", "bmp", "svg");
 				chooser.setFileFilter(imageFilter);
+		        chooser.setDialogTitle("Choose picture");
 
 				int result = chooser.showOpenDialog(UserCRUDForm);
 
