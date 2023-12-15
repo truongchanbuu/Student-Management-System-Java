@@ -65,7 +65,7 @@ public class UserMainForm {
 		UserMainForm.getContentPane().setBackground(UIManager.getColor("CheckBox.background"));
 		UserMainForm.setTitle("Student Management System");
 		UserMainForm.setBounds(100, 100, 740, 484);
-		UserMainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		UserMainForm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		UserMainForm.getContentPane().setLayout(null);
 
 		JLabel lblIntro = new JLabel("USER");

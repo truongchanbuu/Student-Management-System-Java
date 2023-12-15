@@ -1,12 +1,10 @@
-package org.example.dao;
-
-import org.example.model.Certificate;
-import org.example.model.Student;
+package com.midterm.studentmanagementsystem.dao;
 
 import java.sql.*;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.midterm.studentmanagementsystem.models.Certificate;
 
 public class CertificateDAO implements DAO<Certificate>{
 

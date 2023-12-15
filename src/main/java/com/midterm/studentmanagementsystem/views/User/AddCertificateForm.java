@@ -1,11 +1,12 @@
-package org.example.view;
-
-import org.example.dao.CertificateDAO;
-import org.example.model.Certificate;
-import org.example.util.Utils;
+package com.midterm.studentmanagementsystem.views.User;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
+
+import com.midterm.studentmanagementsystem.dao.CertificateDAO;
+import com.midterm.studentmanagementsystem.models.Certificate;
+import com.midterm.studentmanagementsystem.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

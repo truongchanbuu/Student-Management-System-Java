@@ -1,15 +1,19 @@
-package org.example.view;
-
-import org.example.dao.CertificateDAO;
-import org.example.dao.StudentDAO;
-import org.example.model.Student;
-import org.example.util.Utils;
+package com.midterm.studentmanagementsystem.views.User;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
+
+import com.midterm.studentmanagementsystem.dao.CertificateDAO;
+import com.midterm.studentmanagementsystem.dao.LoginHistoryDAO;
+import com.midterm.studentmanagementsystem.dao.StudentDAO;
+import com.midterm.studentmanagementsystem.dao.UserDAO;
+import com.midterm.studentmanagementsystem.models.Student;
+import com.midterm.studentmanagementsystem.models.User;
+import com.midterm.studentmanagementsystem.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,18 +27,23 @@ import java.util.Vector;
 public class StudentMainView {
 
     private StudentDAO studentDAO;
-
+    private LoginHistoryDAO lhDAO;
     private CertificateDAO certificateDAO;
+    private UserDAO userDAO;
     private String sid;
+    private String email;
 
     private JFrame StudentMainView;
     private JFrame StudentCRUDForm;
     private JTable studentTable;
     private JTextField tfSearch;
 
-    public StudentMainView(StudentDAO studentDAO, CertificateDAO certificateDAO){
-        this.studentDAO = studentDAO;
+    public StudentMainView(UserDAO userDAO, StudentDAO studentDAO, CertificateDAO certificateDAO, LoginHistoryDAO lhDAO, String email){
+        this.userDAO = userDAO;
+    	this.studentDAO = studentDAO;
         this.certificateDAO = certificateDAO;
+        this.lhDAO = lhDAO;
+        this.email = email;
         initialize();
     }
 
@@ -44,7 +53,7 @@ public class StudentMainView {
         StudentMainView.setTitle("Student Management System");
         StudentMainView.setBounds(100, 100, 790, 500);
         StudentMainView.setLocationRelativeTo(null);
-        StudentMainView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        StudentMainView.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         StudentMainView.getContentPane().setLayout(null);
         StudentMainView.setResizable(false);
 
@@ -171,19 +180,10 @@ public class StudentMainView {
         btnSearch.setBounds(335, 60, 100, 30);
         StudentMainView.getContentPane().add(btnSearch);
 
-        JButton btnStudent = new JButton("Detail");
+        JButton btnStudent = new JButton(email);
         btnStudent.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int selectedStudentIndex = studentTable.getSelectedRow();
-
-                if (selectedStudentIndex < 0) {
-                    JOptionPane.showMessageDialog(StudentMainView, "No selected row", "There is something wrong",
-                            JOptionPane.OK_OPTION);
-                    return;
-                }
-
-                String studentId = (String) studentTable.getValueAt(selectedStudentIndex, 0);
-                new StudentDetailForm(studentDAO,certificateDAO,studentId,StudentMainView.this);
+                new UserDetailForm(userDAO, lhDAO, email, null);
             }
         });
         btnStudent.setBackground(Color.LIGHT_GRAY);
@@ -199,7 +199,20 @@ public class StudentMainView {
         JButton btnImport = new JButton("Import");
         btnImport.setBounds(550, 60, 100, 30);
         StudentMainView.getContentPane().add(btnImport);
-
+        
+        User currentUser = userDAO.getById(email);
+        
+        if (currentUser.getRole().equalsIgnoreCase("admin")) {
+        	JButton btnUserManagement = new JButton("User Management");
+            btnUserManagement.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            		new UserMainForm(userDAO, lhDAO, email);
+            	}
+            });
+            btnUserManagement.setBounds(595, 390, 165, 43);
+            StudentMainView.getContentPane().add(btnUserManagement);
+        }
+        
         // Delete user
         btnDelete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -342,6 +355,7 @@ public class StudentMainView {
                 }
             }
         });
+        
         StudentMainView.setVisible(true);
     }
     public void updateStudentTable(Student s, boolean isDeleteMode) {

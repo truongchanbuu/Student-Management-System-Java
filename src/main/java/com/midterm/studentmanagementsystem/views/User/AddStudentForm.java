@@ -1,11 +1,12 @@
-package org.example.view;
-
-import org.example.dao.StudentDAO;
-import org.example.model.Student;
-import org.example.util.Utils;
+package com.midterm.studentmanagementsystem.views.User;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
+
+import com.midterm.studentmanagementsystem.dao.StudentDAO;
+import com.midterm.studentmanagementsystem.models.Student;
+import com.midterm.studentmanagementsystem.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

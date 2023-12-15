@@ -1,20 +1,24 @@
-package org.example.view;
+package com.midterm.studentmanagementsystem.views.User;
 
-import org.example.dao.CertificateDAO;
-import org.example.dao.StudentDAO;
-import org.example.model.Certificate;
-import org.example.model.Student;
-import org.example.util.Utils;
-
-import javax.swing.*;
-import javax.swing.text.MaskFormatter;
-import java.awt.*;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Pattern;
+
+import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
+
+import com.midterm.studentmanagementsystem.dao.CertificateDAO;
+import com.midterm.studentmanagementsystem.models.Certificate;
+import com.midterm.studentmanagementsystem.utils.Utils;
 
 public class CertificateCRUDForm {
 
