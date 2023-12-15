@@ -1,7 +1,6 @@
 package com.midterm.studentmanagementsystem.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,10 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import com.midterm.studentmanagementsystem.models.LoginHistory;
-import com.midterm.studentmanagementsystem.models.User;
 
 public class LoginHistoryDAO implements DAO<LoginHistory> {
 	private Connection conn;

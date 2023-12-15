@@ -12,10 +12,14 @@ import javax.swing.JTextField;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import com.midterm.studentmanagementsystem.dao.CertificateDAO;
 import com.midterm.studentmanagementsystem.dao.LoginHistoryDAO;
+import com.midterm.studentmanagementsystem.dao.StudentDAO;
 import com.midterm.studentmanagementsystem.dao.UserDAO;
 import com.midterm.studentmanagementsystem.models.LoginHistory;
 import com.midterm.studentmanagementsystem.models.User;
+import com.midterm.studentmanagementsystem.views.User.StudentCRUDForm;
+import com.midterm.studentmanagementsystem.views.User.StudentMainView;
 import com.midterm.studentmanagementsystem.views.User.UserMainForm;
 
 import javax.swing.JButton;
@@ -28,6 +32,8 @@ import javax.swing.JPasswordField;
 
 public class LoginForm {
 	private UserDAO userDAO;
+	private StudentDAO stdDAO;
+	private CertificateDAO certDAO;
 	private LoginHistoryDAO lhDAO;
 
 	private JFrame LoginForm;
@@ -37,8 +43,10 @@ public class LoginForm {
 	/**
 	 * Create the application.
 	 */
-	public LoginForm(UserDAO userDAO, LoginHistoryDAO lhDAO) {
+	public LoginForm(UserDAO userDAO, StudentDAO stdDAO, CertificateDAO certDAO, LoginHistoryDAO lhDAO) {
 		this.userDAO = userDAO;
+		this.stdDAO = stdDAO;
+		this.certDAO = certDAO;
 		this.lhDAO = lhDAO;
 		initialize();
 	}
@@ -128,20 +136,13 @@ public class LoginForm {
 							JOptionPane.OK_OPTION);
 					return;
 				}
-
-				// It should be Student Form
-				// Delete if it is Student Form
-				// ####
-//				if (!u.getRole().equalsIgnoreCase("admin")) {
-//					JOptionPane.showMessageDialog(LoginForm, "You are not allowed to this", "Authorization", JOptionPane.CLOSED_OPTION);
-//					return;
-//				}
-				// ####
+				
 				LoginHistory lh = new LoginHistory();
 				lh.setEmail(email);
 
 				lhDAO.add(lh);
-				new UserMainForm(userDAO, lhDAO, u.getEmail());
+				
+				new StudentMainView(userDAO, stdDAO, certDAO, lhDAO, email);
 				LoginForm.dispose();
 			}
 		});
@@ -152,7 +153,7 @@ public class LoginForm {
 				if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					btnLogin.doClick();
 				}
-				return false; // Return false to allow the event to be redispatched
+				return false;
 			}
 		};
 
