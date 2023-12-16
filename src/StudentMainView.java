@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-public class StudentMainView{
+public class StudentMainView {
 
     private StudentDAO studentDAO;
     private LoginHistoryDAO lhDAO;

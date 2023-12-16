@@ -14,7 +14,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.util.regex.Pattern;
 
-public class AddStudentForm{
+public class AddStudentForm {
 
     private StudentDAO studentDAO;
     private StudentMainView studentMainView;
