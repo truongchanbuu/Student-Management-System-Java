@@ -1,4 +1,4 @@
-package org.example.model;
+package com.midterm.studentmanagementsystem.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,6 @@
-package org.example.dao;
+package com.midterm.studentmanagementsystem.dao;
 
-import org.example.model.Student;
-import org.mindrot.jbcrypt.BCrypt;
+import com.midterm.studentmanagementsystem.models.Student;
 
 import java.sql.*;
 import java.time.Year;
