@@ -1,11 +1,12 @@
-package org.example.view;
-
-import org.example.dao.CertificateDAO;
-import org.example.model.Certificate;
-import org.example.util.Utils;
+package com.midterm.studentmanagementsystem.views.User;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
+
+import com.midterm.studentmanagementsystem.dao.CertificateDAO;
+import com.midterm.studentmanagementsystem.models.Certificate;
+import com.midterm.studentmanagementsystem.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,42 +59,42 @@ public class AddCertificateForm {
 
         JLabel lblId = new JLabel("ID:");
         lblId.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblId.setBounds(223, 27, 69, 23);
+        lblId.setBounds(150, 27, 150, 23);
         AddCertificateForm.getContentPane().add(lblId);
 
         JLabel lblName = new JLabel("Name:");
         lblName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblName.setBounds(223, 74, 69, 23);
+        lblName.setBounds(150, 74, 69, 23);
         AddCertificateForm.getContentPane().add(lblName);
 
         JLabel lblDescription = new JLabel("Des:");
         lblDescription.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblDescription.setBounds(223, 124, 69, 23);
+        lblDescription.setBounds(150, 124, 150, 23);
         AddCertificateForm.getContentPane().add(lblDescription);
 
         JLabel lblIssueDate = new JLabel("Issue Date:");
         lblIssueDate.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblIssueDate.setBounds(223, 174, 69, 23);
+        lblIssueDate.setBounds(150, 174, 150, 23);
         AddCertificateForm.getContentPane().add(lblIssueDate);
 
         JLabel lblExpiryDate = new JLabel("Expiry Date:");
         lblExpiryDate.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblExpiryDate.setBounds(223, 224, 69, 23);
+        lblExpiryDate.setBounds(150, 224, 150, 23);
         AddCertificateForm.getContentPane().add(lblExpiryDate);
 
         JLabel lblOrganizationName = new JLabel("Organization Name:");
         lblOrganizationName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblOrganizationName.setBounds(223, 274, 69, 23);
+        lblOrganizationName.setBounds(150, 274, 150, 23);
         AddCertificateForm.getContentPane().add(lblOrganizationName);
 
         JLabel lblIsValid = new JLabel("Is Valid:");
         lblIsValid.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblIsValid.setBounds(223, 324, 69, 23);
+        lblIsValid.setBounds(150, 324, 150, 23);
         AddCertificateForm.getContentPane().add(lblIsValid);
 
         JLabel lblSid = new JLabel("Student ID:");
         lblSid.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblSid.setBounds(223, 374, 69, 23);
+        lblSid.setBounds(150, 374, 150, 23);
         AddCertificateForm.getContentPane().add(lblSid);
 
         int yPosition = 31; // Starting y position

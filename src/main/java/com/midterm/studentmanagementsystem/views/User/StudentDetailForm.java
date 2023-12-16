@@ -1,11 +1,4 @@
-package org.example.view;
-
-
-import org.example.dao.CertificateDAO;
-import org.example.dao.StudentDAO;
-import org.example.model.Certificate;
-import org.example.model.Student;
-import org.example.util.Utils;
+package com.midterm.studentmanagementsystem.views.User;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,6 +6,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
+
+import com.midterm.studentmanagementsystem.dao.CertificateDAO;
+import com.midterm.studentmanagementsystem.dao.StudentDAO;
+import com.midterm.studentmanagementsystem.models.Certificate;
+import com.midterm.studentmanagementsystem.models.Student;
+import com.midterm.studentmanagementsystem.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,64 +79,59 @@ public class StudentDetailForm {
             return;
         }
 
-        JLabel lblAvatar = new JLabel("This is an avatar");
-        lblAvatar.setHorizontalAlignment(SwingConstants.CENTER);
-        lblAvatar.setBounds(22, 27, 176, 187);
-        StudentDetailForm.getContentPane().add(lblAvatar);
-
         JLabel lblId = new JLabel("ID:");
         lblId.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblId.setBounds(223, 27, 69, 23);
+        lblId.setBounds(150, 27, 150, 23);
         StudentDetailForm.getContentPane().add(lblId);
 
         JLabel lblName = new JLabel("Name:");
         lblName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblName.setBounds(223, 74, 69, 23);
+        lblName.setBounds(150, 74, 150, 23);
         StudentDetailForm.getContentPane().add(lblName);
 
         JLabel lblDob = new JLabel("Date of Birth:");
         lblDob.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblDob.setBounds(223, 124, 69, 23);
+        lblDob.setBounds(150, 124, 150, 23);
         StudentDetailForm.getContentPane().add(lblDob);
 
         JLabel lblGender = new JLabel("Gender:");
         lblGender.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblGender.setBounds(223, 174, 69, 23);
+        lblGender.setBounds(150, 174, 150, 23);
         StudentDetailForm.getContentPane().add(lblGender);
 
         JLabel lblClassName = new JLabel("Class Name:");
         lblClassName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblClassName.setBounds(223, 224, 69, 23);
+        lblClassName.setBounds(150, 224, 150, 23);
         StudentDetailForm.getContentPane().add(lblClassName);
 
         JLabel lblDepartment = new JLabel("Department:");
         lblDepartment.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblDepartment.setBounds(223, 274, 69, 23);
+        lblDepartment.setBounds(150, 274, 150, 23);
         StudentDetailForm.getContentPane().add(lblDepartment);
 
         JLabel lblMajor = new JLabel("Major:");
         lblMajor.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblMajor.setBounds(223, 324, 69, 23);
+        lblMajor.setBounds(150, 324, 150, 23);
         StudentDetailForm.getContentPane().add(lblMajor);
 
         JLabel lblCourseYear = new JLabel("Course Year:");
         lblCourseYear.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblCourseYear.setBounds(223, 374, 69, 23);
+        lblCourseYear.setBounds(150, 374, 150, 23);
         StudentDetailForm.getContentPane().add(lblCourseYear);
 
         JLabel lblEduType = new JLabel("Edu Type:");
         lblEduType.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblEduType.setBounds(223, 424, 69, 23);
+        lblEduType.setBounds(150, 424, 150, 23);
         StudentDetailForm.getContentPane().add(lblEduType);
 
         JLabel lblCreatedAt = new JLabel("Created At:");
         lblCreatedAt.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblCreatedAt.setBounds(223, 474, 88, 23);
+        lblCreatedAt.setBounds(150, 474, 150, 23);
         StudentDetailForm.getContentPane().add(lblCreatedAt);
 
         JLabel lblUpdatedAt = new JLabel("Updated At:");
         lblUpdatedAt.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblUpdatedAt.setBounds(223, 524, 88, 23);
+        lblUpdatedAt.setBounds(150, 524, 150, 23);
         StudentDetailForm.getContentPane().add(lblUpdatedAt);
 
         int yPosition = 31; // Starting y position
@@ -227,46 +222,6 @@ public class StudentDetailForm {
         tfUpdatedAt.setColumns(10);
         tfUpdatedAt.setBounds(309, yPosition, 191, 20);
         StudentDetailForm.getContentPane().add(tfUpdatedAt);
-
-
-        JButton btnChangeAvatar = new JButton("Change Avatar");
-        btnChangeAvatar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png",
-                        "gif", "bmp", "svg");
-                chooser.setFileFilter(imageFilter);
-
-                int result = chooser.showOpenDialog(StudentDetailForm);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = chooser.getSelectedFile();
-
-                    if (!Utils.checkImageFile(selectedFile)) {
-                        JOptionPane.showMessageDialog(StudentDetailForm, "Please upload an image",
-                                "There is something wrong", JOptionPane.OK_OPTION);
-                        return;
-                    }
-
-                    BufferedImage changedImage = null;
-                    try {
-                        changedImage = ImageIO.read(selectedFile);
-
-                        int labelWidth = lblAvatar.getWidth();
-                        int labelHeight = lblAvatar.getHeight();
-
-                        ImageIcon imgIcon = Utils.stretchImage(changedImage, labelWidth, labelHeight);
-                        lblAvatar.setIcon(imgIcon);
-                        Utils.changeAvatar(selectedFile, s.getSid());
-                    } catch (IOException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
-            }
-        });
-
-        btnChangeAvatar.setBounds(22, 223, 176, 34);
-        StudentDetailForm.getContentPane().add(btnChangeAvatar);
 
         tfId.setText(s.getSid());
         tfName.setText(s.getName());
@@ -391,42 +346,6 @@ public class StudentDetailForm {
 
         btnAdd.setBounds(780, 400, 166, 50);
         StudentDetailForm.getContentPane().add(btnAdd);
-
-//        String baseResourcesDir = "src/main/resources";
-//        Path filePath = Paths.get(baseResourcesDir, "default-avatar.png");
-//
-//        Path directoryPath = Paths.get(baseResourcesDir, s.getSid());
-//        File directory = directoryPath.toFile();
-//
-//        if (directory.exists() && directory.isDirectory()) {
-//            try (Stream<Path> pathStream = Files.find(directoryPath, 1, (p, basicFileAttributes) -> {
-//                String fileName = p.getFileName().toString();
-//                return Pattern.compile("^avatar.*", Pattern.CASE_INSENSITIVE).matcher(fileName).matches();
-//            })) {
-//                Path foundPath = pathStream.findFirst().orElse(null);
-//
-//                if (foundPath != null) {
-//                    filePath = foundPath;
-//                }
-//            } catch (IOException ex) {
-//                System.out.println(ex.getMessage());
-//            }
-//        }
-//
-//        BufferedImage image = null;
-//        try {
-//            image = ImageIO.read(new File(filePath.toUri()));
-//
-//            int labelWidth = lblAvatar.getWidth();
-//            int labelHeight = lblAvatar.getHeight();
-//
-//            ImageIcon imgIcon = Utils.stretchImage(image, labelWidth, labelHeight);
-//            lblAvatar.setIcon(imgIcon);
-//        } catch (IOException ex) {
-//            JOptionPane.showMessageDialog(null, ex.getMessage(), "There is something wrong", JOptionPane.CLOSED_OPTION);
-//        }
-
-        StudentDetailForm.setVisible(true);
 
     }
 

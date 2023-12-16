@@ -1,11 +1,12 @@
-package org.example.view;
-
-import org.example.dao.StudentDAO;
-import org.example.model.Student;
-import org.example.util.Utils;
+package com.midterm.studentmanagementsystem.views.User;
 
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
+
+import com.midterm.studentmanagementsystem.dao.StudentDAO;
+import com.midterm.studentmanagementsystem.models.Student;
+import com.midterm.studentmanagementsystem.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +14,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.util.regex.Pattern;
 
-public class AddStudentForm {
+public class AddStudentForm{
 
     private StudentDAO studentDAO;
     private StudentMainView studentMainView;
@@ -43,7 +44,7 @@ public class AddStudentForm {
         AddStudentForm = new JFrame();
         AddStudentForm.getContentPane().setFont(new Font("Segoe UI", Font.PLAIN, 15));
         AddStudentForm.setTitle("Student Management System");
-        AddStudentForm.setBounds(100, 100, 661, 404);
+        AddStudentForm.setBounds(100, 100, 700, 700);
         AddStudentForm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         AddStudentForm.getContentPane().setLayout(null);
         AddStudentForm.setVisible(true);
@@ -58,47 +59,47 @@ public class AddStudentForm {
 
         JLabel lblId = new JLabel("ID:");
         lblId.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblId.setBounds(223, 27, 69, 23);
+        lblId.setBounds(150, 27, 150, 23);
         AddStudentForm.getContentPane().add(lblId);
 
         JLabel lblName = new JLabel("Name:");
         lblName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblName.setBounds(223, 74, 69, 23);
+        lblName.setBounds(150, 74, 150, 23);
         AddStudentForm.getContentPane().add(lblName);
 
         JLabel lblDob = new JLabel("Date of Birth:");
         lblDob.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblDob.setBounds(223, 124, 69, 23);
+        lblDob.setBounds(150, 124, 150, 23);
         AddStudentForm.getContentPane().add(lblDob);
 
         JLabel lblGender = new JLabel("Gender:");
         lblGender.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblGender.setBounds(223, 174, 69, 23);
+        lblGender.setBounds(150, 174, 150, 23);
         AddStudentForm.getContentPane().add(lblGender);
 
         JLabel lblClassName = new JLabel("Class Name:");
         lblClassName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblClassName.setBounds(223, 224, 69, 23);
+        lblClassName.setBounds(150, 224, 150, 23);
         AddStudentForm.getContentPane().add(lblClassName);
 
         JLabel lblDepartment = new JLabel("Department:");
         lblDepartment.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblDepartment.setBounds(223, 274, 69, 23);
+        lblDepartment.setBounds(150, 274, 150, 23);
         AddStudentForm.getContentPane().add(lblDepartment);
 
         JLabel lblMajor = new JLabel("Major:");
         lblMajor.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblMajor.setBounds(223, 324, 69, 23);
+        lblMajor.setBounds(150, 324, 69, 23);
         AddStudentForm.getContentPane().add(lblMajor);
 
         JLabel lblCourseYear = new JLabel("Course Year:");
         lblCourseYear.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblCourseYear.setBounds(223, 374, 69, 23);
+        lblCourseYear.setBounds(150, 374, 150, 23);
         AddStudentForm.getContentPane().add(lblCourseYear);
 
         JLabel lblEduType = new JLabel("Edu Type:");
         lblEduType.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblEduType.setBounds(223, 424, 69, 23);
+        lblEduType.setBounds(150, 424, 150, 23);
         AddStudentForm.getContentPane().add(lblEduType);
 
         int yPosition = 31; // Starting y position
@@ -165,6 +166,8 @@ public class AddStudentForm {
         tfEduType.setBounds(309, yPosition, 191, 20);
         AddStudentForm.getContentPane().add(tfEduType);
 
+        yPosition += yOffset; // Move to the next line
+
 
         JButton btnReset = new JButton("Reset");
 
@@ -183,7 +186,7 @@ public class AddStudentForm {
             }
         });
 
-        btnReset.setBounds(516, 257, 97, 36);
+        btnReset.setBounds(309, yPosition, 97, 36);
         AddStudentForm.getContentPane().add(btnReset);
 
 
@@ -194,7 +197,7 @@ public class AddStudentForm {
             }
         });
 
-        btnSubmit.setBounds(516, 207, 97, 36);
+        btnSubmit.setBounds(409, yPosition, 97, 36);
         AddStudentForm.getContentPane().add(btnSubmit);
     }
 

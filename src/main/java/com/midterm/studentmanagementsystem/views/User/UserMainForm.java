@@ -1,18 +1,21 @@
 package com.midterm.studentmanagementsystem.views.User;
-
+import com.midterm.studentmanagementsystem.dao.CertificateDAO;
+import com.midterm.studentmanagementsystem.dao.StudentDAO;
+import com.midterm.studentmanagementsystem.views.Auth.LoginForm;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import java.awt.Font;
+import java.awt.*;
 import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
@@ -35,17 +38,20 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java.awt.Color;
-import javax.swing.JComboBox;
 
-public class UserMainForm {
+public class UserMainForm{
 	private UserDAO userDAO;
 	private LoginHistoryDAO lhDAO;
+
+	private StudentDAO studentDAO;
+	private CertificateDAO certificateDAO;
 	private String email;
 
 	private JFrame UserMainForm;
 	private JTable userTable;
 	private JTextField tfSearch;
+	private List<JFrame> openWindows;
+
 
 	/**
 	 * Create the application.
@@ -64,9 +70,11 @@ public class UserMainForm {
 		UserMainForm = new JFrame();
 		UserMainForm.getContentPane().setBackground(UIManager.getColor("CheckBox.background"));
 		UserMainForm.setTitle("Student Management System");
-		UserMainForm.setBounds(100, 100, 740, 484);
-		UserMainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		UserMainForm.setBounds(100, 100, 740, 600);
+		UserMainForm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		UserMainForm.getContentPane().setLayout(null);
+
+		openWindows = new java.util.ArrayList<>();
 
 		JLabel lblIntro = new JLabel("USER");
 		lblIntro.setBounds(10, 22, 49, 27);
@@ -74,8 +82,8 @@ public class UserMainForm {
 		UserMainForm.getContentPane().add(lblIntro);
 		List<User> users = userDAO.getAll();
 
-		String[] columnNames = { "Email", "Name", "Age", "Date of Birth", "Phone", "Status", "Role", "Created At",
-				"Updated At" };
+		String[] columnNames = {"Email", "Name", "Age", "Date of Birth", "Phone", "Status", "Role", "Created At",
+				"Updated At"};
 		DefaultTableModel model = new DefaultTableModel(null, columnNames);
 
 		for (User user : users) {
@@ -99,7 +107,7 @@ public class UserMainForm {
 		// Load user to JTable
 		userTable = new JTable() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -107,14 +115,14 @@ public class UserMainForm {
 				return false;
 			}
 		};
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        userTable.setRowSorter(sorter);
-		
+		final TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+		userTable.setRowSorter(sorter);
+
 		scrollPane.setViewportView(userTable);
 
 		userTable.setModel(model);
 
-		JTableHeader header = userTable.getTableHeader();
+		final JTableHeader header = userTable.getTableHeader();
 		header.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -150,6 +158,20 @@ public class UserMainForm {
 				new UserCRUDForm(userDAO, lhDAO, UserMainForm.this, email, false);
 			}
 		});
+		userTable.addMouseListener(new MouseInputAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// Check for double-click
+				if (e.getClickCount() == 2) {
+					int selectedRow = userTable.getSelectedRow();
+					if (selectedRow != -1) {
+						String email = (String) userTable.getValueAt(selectedRow, 0);
+						openUserDetailForm(email);
+					}
+				}
+			}
+		});
+
 		btnEdit.setBounds(131, 390, 111, 43);
 		UserMainForm.getContentPane().add(btnEdit);
 
@@ -179,8 +201,8 @@ public class UserMainForm {
 				model.setRowCount(0);
 
 				for (User user : searchResult) {
-					Object[] rowData = { user.getEmail(), user.getName(), user.getAge(), user.getDob(), user.getPhone(),
-							user.getStatus(), user.getRole(), user.getCreatedAt(), user.getUpdatedAt() };
+					Object[] rowData = {user.getEmail(), user.getName(), user.getAge(), user.getDob(), user.getPhone(),
+							user.getStatus(), user.getRole(), user.getCreatedAt(), user.getUpdatedAt()};
 					model.addRow(rowData);
 				}
 
@@ -398,7 +420,7 @@ public class UserMainForm {
 		model.fireTableDataChanged();
 	}
 
-	private void showSortPopupMenu(JTableHeader header, int x, int y, int columnIndex, TableRowSorter<DefaultTableModel> sorter) {
+	private void showSortPopupMenu(JTableHeader header, int x, int y, final int columnIndex, final TableRowSorter<DefaultTableModel> sorter) {
 		JPopupMenu popupMenu = new JPopupMenu();
 
 		JMenuItem ascendingItem = new JMenuItem("Sort Ascending");
@@ -430,4 +452,10 @@ public class UserMainForm {
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
 	}
+
+	private void openUserDetailForm(String email) {
+		UserDetailForm studentDetailForm = new UserDetailForm(userDAO, lhDAO, email, UserMainForm.this);
+		// Additional code to set up and display the StudentDetailForm as needed.
+	}
+
 }

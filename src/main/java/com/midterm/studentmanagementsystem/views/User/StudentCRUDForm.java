@@ -1,18 +1,15 @@
-package org.example.view;
+package com.midterm.studentmanagementsystem.views.User;
 
-import org.example.dao.StudentDAO;
-import org.example.model.Student;
-import org.example.util.Utils;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.MaskFormatter;
+
+import com.midterm.studentmanagementsystem.dao.StudentDAO;
+import com.midterm.studentmanagementsystem.models.Student;
+import com.midterm.studentmanagementsystem.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +18,6 @@ import java.nio.file.Paths;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -42,7 +38,6 @@ public class StudentCRUDForm {
     private JTextField tfMajor;
     private JTextField tfCourseYear;
     private JTextField tfEduType;
-    private JLabel lblAvatar;
     private JFormattedTextField tfDob;
 
     public StudentCRUDForm(StudentDAO studentDAO,String sid,StudentMainView studentMainView, boolean isAddMode) {
@@ -73,47 +68,47 @@ public class StudentCRUDForm {
 
         JLabel lblId = new JLabel("ID:");
         lblId.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblId.setBounds(223, 27, 69, 23);
+        lblId.setBounds(150, 27, 150, 23);
         StudentCRUDForm.getContentPane().add(lblId);
 
         JLabel lblName = new JLabel("Name:");
         lblName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblName.setBounds(223, 74, 69, 23);
+        lblName.setBounds(150, 74, 150, 23);
         StudentCRUDForm.getContentPane().add(lblName);
 
         JLabel lblDob = new JLabel("Date of Birth:");
         lblDob.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblDob.setBounds(223, 124, 69, 23);
+        lblDob.setBounds(150, 124, 150, 23);
         StudentCRUDForm.getContentPane().add(lblDob);
 
         JLabel lblGender = new JLabel("Gender:");
         lblGender.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblGender.setBounds(223, 174, 69, 23);
+        lblGender.setBounds(150, 174, 150, 23);
         StudentCRUDForm.getContentPane().add(lblGender);
 
         JLabel lblClassName = new JLabel("Class Name:");
         lblClassName.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblClassName.setBounds(223, 224, 69, 23);
+        lblClassName.setBounds(150, 224, 150, 23);
         StudentCRUDForm.getContentPane().add(lblClassName);
 
         JLabel lblDepartment = new JLabel("Department:");
         lblDepartment.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblDepartment.setBounds(223, 274, 69, 23);
+        lblDepartment.setBounds(150, 274, 150, 23);
         StudentCRUDForm.getContentPane().add(lblDepartment);
 
         JLabel lblMajor = new JLabel("Major:");
         lblMajor.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblMajor.setBounds(223, 324, 69, 23);
+        lblMajor.setBounds(150, 324, 150, 23);
         StudentCRUDForm.getContentPane().add(lblMajor);
 
         JLabel lblCourseYear = new JLabel("Course Year:");
         lblCourseYear.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblCourseYear.setBounds(223, 374, 69, 23);
+        lblCourseYear.setBounds(150, 374, 150, 23);
         StudentCRUDForm.getContentPane().add(lblCourseYear);
 
         JLabel lblEduType = new JLabel("Edu Type:");
         lblEduType.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        lblEduType.setBounds(223, 424, 69, 23);
+        lblEduType.setBounds(150, 424, 150, 23);
         StudentCRUDForm.getContentPane().add(lblEduType);
 
         int yPosition = 31; // Starting y position
@@ -389,69 +384,5 @@ public class StudentCRUDForm {
                 }
             }
         }
-
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(new File(filePath.toUri()));
-
-            int labelWidth = lblAvatar.getWidth();
-            int labelHeight = lblAvatar.getHeight();
-
-            ImageIcon imgIcon = Utils.stretchImage(image, labelWidth, labelHeight);
-            lblAvatar.setIcon(imgIcon);
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "There is something wrong", JOptionPane.CLOSED_OPTION);
-        }
-
-
-        // Change picture
-        btnChangeAvatar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png",
-                        "gif", "bmp", "svg");
-                chooser.setFileFilter(imageFilter);
-                chooser.setDialogTitle("Choose picture");
-
-                int result = chooser.showOpenDialog(StudentCRUDForm);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = chooser.getSelectedFile();
-
-                    if (!Utils.checkImageFile(selectedFile)) {
-                        JOptionPane.showMessageDialog(StudentCRUDForm, "Please upload an image",
-                                "There is something wrong", JOptionPane.OK_OPTION);
-                        return;
-                    }
-                    avatarName = selectedFile.getName();
-
-                    BufferedImage changedImage = null;
-                    try {
-                        changedImage = ImageIO.read(selectedFile);
-
-                        int labelWidth = lblAvatar.getWidth();
-                        int labelHeight = lblAvatar.getHeight();
-
-                        ImageIcon imgIcon = Utils.stretchImage(changedImage, labelWidth, labelHeight);
-                        imgIcon.setDescription(selectedFile.getPath());
-                        lblAvatar.setIcon(imgIcon);
-                    } catch (IOException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
-            }
-        });
-
-        btnChangeAvatar.setBounds(429, 214, 153, 32);
-        StudentCRUDForm.getContentPane().add(btnChangeAvatar);
-
-        if (!avatarName.equalsIgnoreCase("default-avatar.png")) {
-            Icon avatarIcon = lblAvatar.getIcon();
-            String imagePath = ((ImageIcon) avatarIcon).getDescription();
-
-            File avatarFile = new File(imagePath);
-            Utils.changeAvatar(avatarFile, sid);
-        }
-        StudentCRUDForm.dispatchEvent(new WindowEvent(StudentCRUDForm, WindowEvent.WINDOW_CLOSING));
     }
 }
