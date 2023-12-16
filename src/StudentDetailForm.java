@@ -347,6 +347,126 @@ public class StudentDetailForm {
         btnAdd.setBounds(780, 400, 166, 50);
         StudentDetailForm.getContentPane().add(btnAdd);
 
+        JButton btnExport = new JButton("Export");
+        btnExport.setBounds(1150, 27, 150, 30);
+        StudentDetailForm.getContentPane().add(btnExport);
+
+        JButton btnImport = new JButton("Import");
+        btnImport.setBounds(970, 27, 150, 30);
+        StudentDetailForm.getContentPane().add(btnImport);
+
+        btnExport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setDialogTitle("Choose Directory to store file");
+                FileNameExtensionFilter csvFilter = new FileNameExtensionFilter("CSV Files (*.csv)", "csv");
+                FileNameExtensionFilter xlsxFilter = new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx");
+                chooser.addChoosableFileFilter(csvFilter);
+                chooser.addChoosableFileFilter(xlsxFilter);
+
+                int result = chooser.showSaveDialog(StudentDetailForm);
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = chooser.getSelectedFile();
+                    String extension = "";
+                    String description = chooser.getFileFilter().getDescription();
+
+                    if (selectedFile.getName().contains(".")) {
+                        extension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf(".") + 1);
+                    } else {
+                        if (description.endsWith("CSV Files (*.csv)")) {
+                            extension = "csv";
+                        } else if (description.endsWith("Excel Files (*.xlsx)")) {
+                            extension = "xlsx";
+                        } else {
+                            extension = "csv";
+                        }
+                    }
+
+                    String filePath = selectedFile.getPath();
+                    if (!filePath.toLowerCase().endsWith("." + extension)) {
+                        selectedFile = new File(filePath + "." + extension);
+                    }
+
+                    List<Certificate> certificates = certificateDAO.getAll();
+
+                    if (extension.equals("csv")) {
+                        Utils.exportToCSV(certificates, selectedFile.getPath());
+                    } else if (extension.equals("xlsx")) {
+                        Utils.exportToExcel(certificates, selectedFile.getPath());
+                    } else {
+                        JOptionPane.showMessageDialog(StudentDetailForm, "This extension is not supported!");
+                        return;
+                    }
+
+                    JOptionPane.showMessageDialog(StudentDetailForm, "Exported", "Success", JOptionPane.OK_OPTION);
+                }
+            }
+        });
+
+
+        btnImport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int confirmResult = JOptionPane.showConfirmDialog(StudentDetailForm,
+                        "This action can affect to the data. Are you sure to import?");
+
+                if (confirmResult == JOptionPane.OK_OPTION) {
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setDialogTitle("Choose a file");
+                    FileNameExtensionFilter csvFilter = new FileNameExtensionFilter("CSV Files (*.csv)", "csv");
+                    FileNameExtensionFilter xlsxFilter = new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx");
+                    chooser.addChoosableFileFilter(csvFilter);
+                    chooser.addChoosableFileFilter(xlsxFilter);
+
+                    int result = chooser.showOpenDialog(StudentDetailForm);
+
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        File selectedFile = chooser.getSelectedFile();
+                        String description = chooser.getFileFilter().getDescription();
+
+                        List<Certificate> certificates = new ArrayList<>();
+
+                        if (description.endsWith("CSV Files (*.csv)") || selectedFile.getName().endsWith(".csv")) {
+                            certificates = Utils.importDataFromCsvFile(selectedFile.getPath(), Certificate.class);
+                        } else {
+                            certificates = Utils.importDataFromExcelFile(selectedFile.getPath(), Certificate.class);
+                        }
+
+                        for (Certificate c : certificates) {
+                            Certificate existedCertificate = certificateDAO.getById(c.getCid());
+
+                            if (existedCertificate != null) {
+                                int resultConfirmChange = JOptionPane.showConfirmDialog(StudentDetailForm,
+                                        "The user \"" + existedCertificate.getSid()
+                                                + "\" is already in the data. Do you really want to change it?");
+
+                                if (resultConfirmChange == JOptionPane.YES_OPTION) {
+                                    boolean isDeleteExistedCertificate = certificateDAO.delete(existedCertificate);
+
+                                    if (!isDeleteExistedCertificate) {
+                                        JOptionPane.showMessageDialog(StudentDetailForm,
+                                                "Cannot import " + existedCertificate.getCid());
+                                        continue;
+                                    }
+                                } else {
+                                    continue;
+                                }
+                            }
+
+                            boolean isAdded = certificateDAO.add(c);
+                            if (!isAdded) {
+                                JOptionPane.showMessageDialog(StudentDetailForm, "Cannot import " + c.getCid());
+                                continue;
+                            }
+
+                            updateCertificateTable(c, false);
+                        }
+
+                        JOptionPane.showMessageDialog(StudentDetailForm, "Imported", "Success", JOptionPane.OK_OPTION);
+                    }
+                }
+            }
+        });
     }
 
     private void showSortPopupMenu(JTableHeader header, int x, int y, int columnIndex, TableRowSorter<DefaultTableModel> sorter) {
