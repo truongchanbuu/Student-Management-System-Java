@@ -14,6 +14,7 @@ import com.midterm.studentmanagementsystem.dao.UserDAO;
 import com.midterm.studentmanagementsystem.models.Student;
 import com.midterm.studentmanagementsystem.models.User;
 import com.midterm.studentmanagementsystem.utils.Utils;
+import com.midterm.studentmanagementsystem.views.Auth.LoginForm;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -206,7 +207,7 @@ public class StudentMainView{
         btnStudent.setBackground(Color.LIGHT_GRAY);
         btnStudent.setHorizontalAlignment(SwingConstants.RIGHT);
         btnStudent.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        btnStudent.setBounds(595, 22, 165, 23);
+        btnStudent.setBounds(493, 22, 165, 23);
         StudentMainView.getContentPane().add(btnStudent);
 
         JButton btnExport = new JButton("Export");
@@ -216,6 +217,16 @@ public class StudentMainView{
         JButton btnImport = new JButton("Import");
         btnImport.setBounds(550, 60, 100, 30);
         StudentMainView.getContentPane().add(btnImport);
+        
+        JButton btnLogout = new JButton("Log out");
+        btnLogout.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		StudentMainView.dispose();
+        		new LoginForm(userDAO, studentDAO, certificateDAO, lhDAO);
+        	}
+        });
+        btnLogout.setBounds(671, 22, 89, 23);
+        StudentMainView.getContentPane().add(btnLogout);
         
         User currentUser = userDAO.getById(email);
         
