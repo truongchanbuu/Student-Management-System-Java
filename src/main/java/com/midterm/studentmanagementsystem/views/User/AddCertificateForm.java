@@ -266,6 +266,5 @@ public class AddCertificateForm {
                     JOptionPane.OK_OPTION);
         }
     }
-
 }
 

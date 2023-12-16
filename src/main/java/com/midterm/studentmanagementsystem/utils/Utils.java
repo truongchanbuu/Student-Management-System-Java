@@ -298,6 +298,7 @@ public class Utils<T> {
 				return Date.valueOf(localDate);
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.out.println(dateString);
 			}
 		}
 		return null;
